@@ -1,0 +1,30 @@
+services:
+  app:
+    image: spring-docker-mq-producer:latest  # Replace with your image name
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9092:8080" # Port can be modified, now app will run at 9092 port
+    depends_on:
+      - mq
+    environment:
+      - MQ_HOST=mq
+      - MQ_PORT=1414
+      - MQ_CHANNEL=DEV.APP.SVRCONN
+      - MQ_QUEUE_MANAGER=QM1
+      - MQ_USERNAME=app
+      - MQ_PASSWORD=passw0rd
+
+  mq:
+    image: icr.io/ibm-messaging/mq:9.3.2.0-r2
+    ports:
+      - "1414:1414"
+      - "9443:9443"
+    environment:
+      - LICENSE=accept
+      - MQ_QMGR_NAME=QM1
+      - MQ_APP_PASSWORD=passw0rd
+      - MQ_ADMIN_PASSWORD=adminpass
+    volumes:
+        - ./mqdata:/mnt/mqm
